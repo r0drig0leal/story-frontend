@@ -4,11 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FORM_OPTIONS } from "@/lib/constants";
-import { Character, Story, StoryChapter } from "@/types/story";
+import { Character, StoryChapter } from "@/types/story";
 import { generateCompleteStory } from "@/lib/storyGenerator";
 import { useToast } from "@/components/ui/use-toast";
+import { CharacterForm } from "@/components/story/CharacterForm";
+import { StoryDisplay } from "@/components/story/StoryDisplay";
 
 const Index = () => {
   const { toast } = useToast();
@@ -74,102 +74,10 @@ const Index = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome do Personagem</Label>
-                <Input
-                  id="name"
-                  value={character.name}
-                  onChange={(e) => setCharacter({ ...character, name: e.target.value })}
-                  placeholder="Nome"
-                  className="w-full"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="age">Idade</Label>
-                <Input
-                  id="age"
-                  type="number"
-                  value={character.age || ""}
-                  onChange={(e) => setCharacter({ ...character, age: parseInt(e.target.value) })}
-                  placeholder="Idade"
-                  className="w-full"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Cor dos Olhos</Label>
-                <Select onValueChange={(value) => setCharacter({ ...character, eyeColor: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {FORM_OPTIONS.eyeColors.map((color) => (
-                        <SelectItem key={color} value={color}>
-                          {color}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Cor do Cabelo</Label>
-                <Select onValueChange={(value) => setCharacter({ ...character, hairColor: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {FORM_OPTIONS.hairColors.map((color) => (
-                        <SelectItem key={color} value={color}>
-                          {color}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Cor da Pele</Label>
-                <Select onValueChange={(value) => setCharacter({ ...character, skinColor: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {FORM_OPTIONS.skinColors.map((color) => (
-                        <SelectItem key={color} value={color}>
-                          {color}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Biotipo</Label>
-                <Select onValueChange={(value) => setCharacter({ ...character, bodyType: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {FORM_OPTIONS.bodyTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <CharacterForm 
+              character={character}
+              onCharacterChange={setCharacter}
+            />
 
             <Button
               type="submit"
@@ -183,47 +91,7 @@ const Index = () => {
 
         {Object.keys(story).length > 0 && (
           <Card className="p-6 backdrop-blur-sm bg-white/80 shadow-xl space-y-6 animate-in slide-in-from-bottom duration-700">
-            <div className="prose prose-sm max-w-none">
-              <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-rose-400 to-teal-400 bg-clip-text text-transparent">
-                História Gerada
-              </h2>
-              
-              <div className="space-y-6">
-                <section>
-                  <h3 className="text-xl font-semibold">História Inicial</h3>
-                  <p className="whitespace-pre-wrap">{story.initial}</p>
-                </section>
-
-                <section>
-                  <h3 className="text-xl font-semibold">Estrutura</h3>
-                  <p className="whitespace-pre-wrap">{story.structure}</p>
-                </section>
-
-                <section>
-                  <h3 className="text-xl font-semibold">Outline</h3>
-                  <div className="space-y-4">
-                    {story.chapters?.map((chapter, index) => (
-                      <div key={index} className="border-l-4 border-rose-400 pl-4">
-                        <h4 className="font-semibold">Capítulo {chapter.chapter}</h4>
-                        <p className="whitespace-pre-wrap mb-4">{chapter.content}</p>
-                        {chapter.image && (
-                          <img
-                            src={chapter.image}
-                            alt={`Ilustração do capítulo ${chapter.chapter}`}
-                            className="rounded-lg shadow-md w-full h-auto mb-4"
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-xl font-semibold">Prompts de Imagem</h3>
-                  <p className="whitespace-pre-wrap">{story.imagePrompts}</p>
-                </section>
-              </div>
-            </div>
+            <StoryDisplay {...story} />
           </Card>
         )}
       </div>
