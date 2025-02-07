@@ -1,4 +1,3 @@
-
 import { Character, Story, StoryChapter } from "../types/story";
 
 const generateInitialStory = async (character: Character, apiKey: string): Promise<string> => {
@@ -65,7 +64,7 @@ const generateStoryStructure = async (initialStory: string, apiKey: string): Pro
   return data.choices[0].message.content;
 };
 
-const generateOutline = async (structure: string, apiKey: string): Promise<string> => {
+const generateOutline = async (outline: string, apiKey: string): Promise<string> => {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -81,7 +80,7 @@ const generateOutline = async (structure: string, apiKey: string): Promise<strin
         },
         {
           role: "user",
-          content: `Com base nesta estrutura: ${structure}, elabore um outline detalhado para a história, incluindo uma breve descrição de cada capítulo. O roteiro final deve ter cerca de 1000 palavras.`,
+          content: `Com base nesta estrutura: ${outline}, elabore um outline detalhado para a história, incluindo uma breve descrição de cada capítulo. O roteiro final deve ter cerca de 1000 palavras.`,
         },
       ],
     }),
@@ -103,11 +102,11 @@ const generateImagePrompts = async (outline: string, apiKey: string): Promise<st
       messages: [
         {
           role: "system",
-          content: "You are a creative image prompt generator.",
+          content: "You are a creative image prompt generator for children's books. Generate safe, child-friendly prompts.",
         },
         {
           role: "user",
-          content: `Com base neste outline: ${outline}, gere prompts de imagem no formato 16:9 para cada capítulo, seguindo o estilo Pixar e em inglês.`,
+          content: `Please create child-friendly, safe image prompts for a children's story based on this outline: ${outline}. Each prompt should be simple, cute, and appropriate for young children. Use a Pixar-like, digital art style. Format in English.`,
         },
       ],
     }),
@@ -118,28 +117,40 @@ const generateImagePrompts = async (outline: string, apiKey: string): Promise<st
 };
 
 const generateImage = async (prompt: string, apiKey: string): Promise<string> => {
-  const response = await fetch("https://api.openai.com/v1/images/generations", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "dall-e-3",
-      prompt: prompt,
-      size: "1792x1024",
-      quality: "standard",
-      n: 1,
-    }),
-  });
+  const safePrompt = `Create a child-friendly, cute illustration in Pixar style: ${prompt}. Digital art, vibrant colors, safe for children, non-violent, G-rated content only.`;
+  
+  try {
+    const response = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "dall-e-3",
+        prompt: safePrompt,
+        size: "1792x1024",
+        quality: "standard",
+        style: "natural",
+        n: 1,
+      }),
+    });
 
-  const data = await response.json();
-  return data.data[0].url;
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Image generation error:', errorData);
+      throw new Error(`Failed to generate image: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data = await response.json();
+    return data.data[0].url;
+  } catch (error) {
+    console.error('Error in generateImage:', error);
+    throw error;
+  }
 };
 
 const parseChapters = (outline: string, imagePrompts: string): StoryChapter[] => {
-  // Implemente a lógica para extrair capítulos e seus prompts de imagem
-  // Este é um exemplo simplificado
   const chapters = outline.split(/Capítulo \d+/).filter(Boolean);
   const prompts = imagePrompts.split(/Chapter \d+/).filter(Boolean);
 
@@ -164,7 +175,6 @@ export const generateCompleteStory = async (character: Character, apiKey: string
   
   const chapters = parseChapters(outline, imagePrompts);
   
-  // Gerar imagens para cada capítulo
   for (const chapter of chapters) {
     try {
       chapter.image = await generateImage(chapter.imagePrompt, apiKey);
