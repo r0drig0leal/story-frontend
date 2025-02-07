@@ -12,6 +12,7 @@ export interface StoryChapter {
   chapter: number;
   content: string;
   imagePrompt: string;
+  image?: string;
 }
 
 export interface Story {

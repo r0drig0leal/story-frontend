@@ -1,5 +1,5 @@
 
-import { Character, Story } from "../types/story";
+import { Character, Story, StoryChapter } from "../types/story";
 
 const generateInitialStory = async (character: Character, apiKey: string): Promise<string> => {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -117,21 +117,67 @@ const generateImagePrompts = async (outline: string, apiKey: string): Promise<st
   return data.choices[0].message.content;
 };
 
+const generateImage = async (prompt: string, apiKey: string): Promise<string> => {
+  const response = await fetch("https://api.openai.com/v1/images/generations", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "dall-e-3",
+      prompt: prompt,
+      size: "1792x1024",
+      quality: "standard",
+      n: 1,
+    }),
+  });
+
+  const data = await response.json();
+  return data.data[0].url;
+};
+
+const parseChapters = (outline: string, imagePrompts: string): StoryChapter[] => {
+  // Implemente a lógica para extrair capítulos e seus prompts de imagem
+  // Este é um exemplo simplificado
+  const chapters = outline.split(/Capítulo \d+/).filter(Boolean);
+  const prompts = imagePrompts.split(/Chapter \d+/).filter(Boolean);
+
+  return chapters.map((content, index) => ({
+    chapter: index + 1,
+    content: content.trim(),
+    imagePrompt: prompts[index]?.trim() || "",
+  }));
+};
+
 export const generateCompleteStory = async (character: Character, apiKey: string): Promise<{
   initial: string;
   structure: string;
   outline: string;
   imagePrompts: string;
+  chapters: StoryChapter[];
 }> => {
   const initial = await generateInitialStory(character, apiKey);
   const structure = await generateStoryStructure(initial, apiKey);
   const outline = await generateOutline(structure, apiKey);
   const imagePrompts = await generateImagePrompts(outline, apiKey);
+  
+  const chapters = parseChapters(outline, imagePrompts);
+  
+  // Gerar imagens para cada capítulo
+  for (const chapter of chapters) {
+    try {
+      chapter.image = await generateImage(chapter.imagePrompt, apiKey);
+    } catch (error) {
+      console.error(`Error generating image for chapter ${chapter.chapter}:`, error);
+    }
+  }
 
   return {
     initial,
     structure,
     outline,
     imagePrompts,
+    chapters,
   };
 };

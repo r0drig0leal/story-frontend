@@ -26,6 +26,7 @@ const Index = () => {
     structure?: string;
     outline?: string;
     imagePrompts?: string;
+    images?: { [key: string]: string };
   }>({});
 
   const [apiKey, setApiKey] = useState("");
@@ -200,7 +201,21 @@ const Index = () => {
 
                 <section>
                   <h3 className="text-xl font-semibold">Outline</h3>
-                  <p className="whitespace-pre-wrap">{story.outline}</p>
+                  <div className="space-y-4">
+                    {story.chapters?.map((chapter, index) => (
+                      <div key={index} className="border-l-4 border-rose-400 pl-4">
+                        <h4 className="font-semibold">Capítulo {chapter.chapter}</h4>
+                        <p className="whitespace-pre-wrap mb-4">{chapter.content}</p>
+                        {chapter.image && (
+                          <img
+                            src={chapter.image}
+                            alt={`Ilustração do capítulo ${chapter.chapter}`}
+                            className="rounded-lg shadow-md w-full h-auto mb-4"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </section>
 
                 <section>
