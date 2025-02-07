@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FORM_OPTIONS } from "@/lib/constants";
-import { Character } from "@/types/story";
+import { Character, Story, StoryChapter } from "@/types/story";
 import { generateCompleteStory } from "@/lib/storyGenerator";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -26,7 +26,7 @@ const Index = () => {
     structure?: string;
     outline?: string;
     imagePrompts?: string;
-    images?: { [key: string]: string };
+    chapters?: StoryChapter[];
   }>({});
 
   const [apiKey, setApiKey] = useState("");
