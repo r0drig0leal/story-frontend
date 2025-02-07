@@ -90,7 +90,9 @@ const generateOutline = async (outline: string, apiKey: string): Promise<string>
   return data.choices[0].message.content;
 };
 
-const generateImagePrompts = async (outline: string, apiKey: string): Promise<string> => {
+const generateImagePrompts = async (outline: string, character: Character, apiKey: string): Promise<string> => {
+  const characterDescription = `A ${character.age} year old character with ${character.hairColor} hair, ${character.eyeColor} eyes, ${character.skinColor} skin, and ${character.bodyType} body type`;
+  
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -102,11 +104,15 @@ const generateImagePrompts = async (outline: string, apiKey: string): Promise<st
       messages: [
         {
           role: "system",
-          content: "You are a creative image prompt generator for children's books. Generate safe, child-friendly prompts.",
+          content: "You are a creative image prompt generator for children's books. Generate safe, child-friendly prompts that maintain character consistency.",
         },
         {
           role: "user",
-          content: `Please create child-friendly, safe image prompts for a children's story based on this outline: ${outline}. Each prompt should be simple, cute, and appropriate for young children. Use a Pixar-like, digital art style. Format in English.`,
+          content: `Create child-friendly image prompts for a children's story based on this outline: ${outline}. 
+          The main character (${character.name}) must remain consistent in all images with these characteristics: ${characterDescription}.
+          Each prompt should focus on different scenarios and backgrounds while keeping the character's appearance consistent.
+          Each prompt must start with the character description.
+          Use a Pixar-like, digital art style. Format in English.`,
         },
       ],
     }),
@@ -116,8 +122,10 @@ const generateImagePrompts = async (outline: string, apiKey: string): Promise<st
   return data.choices[0].message.content;
 };
 
-const generateImage = async (prompt: string, apiKey: string): Promise<string> => {
-  const safePrompt = `Create a child-friendly, cute illustration in Pixar style: ${prompt}. Digital art, vibrant colors, safe for children, non-violent, G-rated content only.`;
+const generateImage = async (prompt: string, character: Character, apiKey: string): Promise<string> => {
+  const characterDescription = `A ${character.age} year old character named ${character.name} with ${character.hairColor} hair, ${character.eyeColor} eyes, ${character.skinColor} skin, and ${character.bodyType} body type`;
+  
+  const safePrompt = `Create a child-friendly, cute illustration in Pixar style, featuring ${characterDescription}. Scene details: ${prompt}. Digital art, vibrant colors, safe for children, non-violent, G-rated content only. Maintain consistent character appearance across all illustrations.`;
   
   try {
     const response = await fetch("https://api.openai.com/v1/images/generations", {
@@ -171,13 +179,13 @@ export const generateCompleteStory = async (character: Character, apiKey: string
   const initial = await generateInitialStory(character, apiKey);
   const structure = await generateStoryStructure(initial, apiKey);
   const outline = await generateOutline(structure, apiKey);
-  const imagePrompts = await generateImagePrompts(outline, apiKey);
+  const imagePrompts = await generateImagePrompts(outline, character, apiKey);
   
   const chapters = parseChapters(outline, imagePrompts);
   
   for (const chapter of chapters) {
     try {
-      chapter.image = await generateImage(chapter.imagePrompt, apiKey);
+      chapter.image = await generateImage(chapter.imagePrompt, character, apiKey);
     } catch (error) {
       console.error(`Error generating image for chapter ${chapter.chapter}:`, error);
     }
