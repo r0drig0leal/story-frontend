@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,19 +34,16 @@ const Index = () => {
 
   const [apiKey, setApiKey] = useState("");
 
-  const simulateProgress = () => {
+  const startLoadingAnimation = () => {
     setProgress(0);
-    const interval = setInterval(() => {
+    return setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
+        if (prev >= 95) {
+          return 95; // Mantém em 95% até finalizar
         }
         return prev + 1;
       });
     }, 150);
-
-    return () => clearInterval(interval);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,11 +58,12 @@ const Index = () => {
     }
 
     setIsLoading(true);
-    const cleanup = simulateProgress();
+    const loadingInterval = startLoadingAnimation();
     
     try {
       const result = await generateCompleteStory(character, apiKey);
       setStory(result);
+      setProgress(100); // Finaliza a barra de progresso
     } catch (error) {
       toast({
         title: "Erro",
@@ -72,8 +71,8 @@ const Index = () => {
         variant: "destructive",
       });
     } finally {
+      clearInterval(loadingInterval);
       setIsLoading(false);
-      cleanup();
     }
   };
 

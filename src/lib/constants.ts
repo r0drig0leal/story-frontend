@@ -33,7 +33,5 @@ export const FORM_OPTIONS = {
   genders: [
     "Menino",
     "Menina",
-    "Não-binário",
   ],
 };
-
