@@ -16,7 +16,18 @@ const generateInitialStory = async (character: Character, apiKey: string): Promi
         },
         {
           role: "user",
-          content: `vou criar um livro sobre uma historia para crianças até 3 anos de idade, de modo ludico, quero criar algo inovador, detalhista e que prenda a atenção do espectador. O personagem principal tem as seguintes características: Nome: ${character.name}, Gênero: ${character.gender}, Idade: ${character.age}, Cor dos olhos: ${character.eyeColor}, Cor do cabelo: ${character.hairColor}, Cor da pele: ${character.skinColor}, Biotipo: ${character.bodyType}. 
+          content: `vou criar um livro sobre uma historia para crianças até 3 anos de idade, de modo ludico, quero criar algo inovador, detalhista e que prenda a atenção do espectador. 
+          
+          O personagem principal tem as seguintes características: 
+          Nome: ${character.name}
+          Gênero: ${character.gender}
+          Idade: ${character.age}
+          Cor dos olhos: ${character.eyeColor}
+          Cor do cabelo: ${character.hairColor}
+          Cor da pele: ${character.skinColor}
+          Biotipo: ${character.bodyType}
+          
+          Contexto da história: ${character.context}
 
           Por favor, forneça:
           (Qual o titulo chamativo da historia?)

@@ -2,6 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { FORM_OPTIONS } from "@/lib/constants";
 import { Character } from "@/types/story";
 
@@ -124,6 +125,17 @@ export const CharacterForm = ({ character, onCharacterChange }: CharacterFormPro
             </SelectGroup>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-2 md:col-span-2">
+        <Label htmlFor="context">Contexto da História</Label>
+        <Textarea
+          id="context"
+          value={character.context}
+          onChange={(e) => onCharacterChange({ ...character, context: e.target.value })}
+          placeholder="Descreva o contexto ou tema da história (ex: aventura na floresta, dia na escola, viagem espacial...)"
+          className="w-full min-h-[100px]"
+        />
       </div>
     </div>
   );

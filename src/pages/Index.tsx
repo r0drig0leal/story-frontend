@@ -23,6 +23,7 @@ const Index = () => {
     hairColor: "",
     skinColor: "",
     bodyType: "",
+    context: "",
   });
   const [story, setStory] = useState<{
     initial?: string;
@@ -130,3 +131,4 @@ const Index = () => {
 };
 
 export default Index;
+

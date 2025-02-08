@@ -1,4 +1,3 @@
-
 export interface Character {
   name: string;
   age: number;
@@ -7,6 +6,7 @@ export interface Character {
   hairColor: string;
   skinColor: string;
   bodyType: string;
+  context: string;
 }
 
 export interface StoryChapter {
@@ -29,4 +29,3 @@ export interface Story {
   narration: string;
   chapters: StoryChapter[];
 }
-
