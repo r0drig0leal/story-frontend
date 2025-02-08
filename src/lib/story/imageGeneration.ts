@@ -27,10 +27,16 @@ export const generateImagePrompts = async (outline: string, character: Character
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "gpt-4o-mini",
+      model: "gpt-4",
       messages,
+      max_tokens: 500,
+      temperature: 0.7,
     }),
   });
+
+  if (!response.ok) {
+    throw new Error(`Failed to generate image prompts: ${response.statusText}`);
+  }
 
   const data = await response.json();
   return data.choices[0].message.content;
@@ -40,8 +46,9 @@ export const generateImage = async (prompt: string, character: Character, apiKey
   // Create a very concise character description
   const characterDesc = `${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'} with ${character.hairColor} hair`;
   
-  // Keep the prompt short and focused
-  const safePrompt = `Pixar-style children's illustration. ${characterDesc}. ${prompt.split(':')[1]?.slice(0, 100) || prompt.slice(0, 100)}. Digital art style, child-friendly.`;
+  // Keep the prompt short and focused, limiting to 50 words for safer DALL-E compatibility
+  const promptText = prompt.split(':')[1]?.slice(0, 50) || prompt.slice(0, 50);
+  const safePrompt = `Pixar-style children's illustration. ${characterDesc}. ${promptText}. Digital art style, child-friendly.`;
   
   return generateDallEImage(safePrompt, apiKey);
 };
