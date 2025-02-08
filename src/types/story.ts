@@ -2,6 +2,7 @@
 export interface Character {
   name: string;
   age: number;
+  gender: string;
   eyeColor: string;
   hairColor: string;
   skinColor: string;
@@ -28,3 +29,4 @@ export interface Story {
   narration: string;
   chapters: StoryChapter[];
 }
+

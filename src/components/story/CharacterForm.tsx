@@ -37,6 +37,24 @@ export const CharacterForm = ({ character, onCharacterChange }: CharacterFormPro
       </div>
 
       <div className="space-y-2">
+        <Label>Gênero</Label>
+        <Select onValueChange={(value) => onCharacterChange({ ...character, gender: value })}>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecione" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {FORM_OPTIONS.genders.map((gender) => (
+                <SelectItem key={gender} value={gender}>
+                  {gender}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
         <Label>Cor dos Olhos</Label>
         <Select onValueChange={(value) => onCharacterChange({ ...character, eyeColor: value })}>
           <SelectTrigger>
@@ -110,3 +128,4 @@ export const CharacterForm = ({ character, onCharacterChange }: CharacterFormPro
     </div>
   );
 };
+

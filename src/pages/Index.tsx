@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +17,7 @@ const Index = () => {
   const [character, setCharacter] = useState<Character>({
     name: "",
     age: 0,
+    gender: "",
     eyeColor: "",
     hairColor: "",
     skinColor: "",
