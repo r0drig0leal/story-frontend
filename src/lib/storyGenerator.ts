@@ -1,3 +1,4 @@
+
 import { Character, Story, StoryChapter } from "../types/story";
 
 const generateInitialStory = async (character: Character, apiKey: string): Promise<string> => {
@@ -134,9 +135,9 @@ const generateImagePrompts = async (outline: string, character: Character, apiKe
 };
 
 const generateImage = async (prompt: string, character: Character, apiKey: string): Promise<string> => {
-  const characterDescription = `A ${character.age} year old ${character.gender.toLowerCase()} named ${character.name} with ${character.hairColor} hair, ${character.eyeColor} eyes, ${character.skinColor} skin, and ${character.bodyType} body type`;
+  const characterDescription = `A ${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'} with ${character.hairColor} hair, ${character.eyeColor} eyes, ${character.skinColor} skin, and ${character.bodyType} body type`;
   
-  const safePrompt = `Create a child-friendly, cute illustration in Pixar style, featuring ${characterDescription}. Scene details: ${prompt}. Digital art, vibrant colors, safe for children, non-violent, G-rated content only. Maintain consistent character appearance, clothing style, and overall look across all illustrations.`;
+  const safePrompt = `Create a Pixar-style children's book illustration. ${characterDescription}. Scene: ${prompt}. Cute, child-friendly, digital art style.`;
   
   try {
     const response = await fetch("https://api.openai.com/v1/images/generations", {
