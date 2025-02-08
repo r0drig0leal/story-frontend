@@ -1,4 +1,3 @@
-
 import { Character } from "../../types/story";
 import { generateDallEImage } from "../openai/api";
 
@@ -8,15 +7,16 @@ export const generateImagePrompts = async (outline: string, character: Character
   const messages = [
     {
       role: "system",
-      content: "You are a creative image prompt generator for children's books. Generate safe, child-friendly prompts that maintain character consistency.",
+      content: "You are a creative image prompt generator for children's books. Generate short, concise, child-friendly prompts.",
     },
     {
       role: "user",
-      content: `Create child-friendly image prompts for a children's story based on this outline: ${outline}. 
-      The main character must remain consistent in all images with these characteristics: ${characterDescription}.
-      Each prompt should focus on different scenarios and backgrounds while keeping the character's appearance, clothing style, and overall look consistent across all scenes.
-      Each prompt must start with the character description.
-      Use a Pixar-like, digital art style. Format in English.`,
+      content: `Create brief, child-friendly scene descriptions for a children's story. 
+      Main character: ${characterDescription}.
+      Story outline: ${outline}
+      Keep each prompt under 100 words and focus on one key scene element.
+      Format as "Chapter X: [brief scene description]"
+      Use simple, clear language.`,
     },
   ];
 
@@ -37,9 +37,11 @@ export const generateImagePrompts = async (outline: string, character: Character
 };
 
 export const generateImage = async (prompt: string, character: Character, apiKey: string): Promise<string> => {
-  const characterDescription = `A ${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'} with ${character.hairColor} hair, ${character.eyeColor} eyes, ${character.skinColor} skin, and ${character.bodyType} body type`;
+  // Create a very concise character description
+  const characterDesc = `${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'} with ${character.hairColor} hair`;
   
-  const safePrompt = `Create a Pixar-style children's book illustration. ${characterDescription}. Scene: ${prompt}. Cute, child-friendly, digital art style.`;
+  // Keep the prompt short and focused
+  const safePrompt = `Pixar-style children's illustration. ${characterDesc}. ${prompt.split(':')[1]?.slice(0, 100) || prompt.slice(0, 100)}. Digital art style, child-friendly.`;
   
   return generateDallEImage(safePrompt, apiKey);
 };
