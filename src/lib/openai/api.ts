@@ -19,10 +19,10 @@ export const callOpenAIChat = async (messages: any[], apiKey: string) => {
     console.error('OpenAI API Error:', errorData);
     
     if (response.status === 429) {
-      throw new Error('Limite de quota da API OpenAI atingido. Por favor, verifique seu plano e detalhes de faturamento.');
+      throw new Error('OpenAI API quota exceeded. Please check your plan and billing details.');
     }
     
-    throw new Error(`Erro na API OpenAI: ${errorData.error?.message || 'Erro desconhecido'}`);
+    throw new Error(`OpenAI API Error: ${errorData.error?.message || 'Unknown error'}`);
   }
 
   const data = await response.json();
@@ -51,10 +51,10 @@ export const generateDallEImage = async (prompt: string, apiKey: string): Promis
     console.error('Image generation error:', errorData);
     
     if (response.status === 429) {
-      throw new Error('Limite de quota da API OpenAI atingido. Por favor, verifique seu plano e detalhes de faturamento.');
+      throw new Error('OpenAI API quota exceeded. Please check your plan and billing details.');
     }
     
-    throw new Error(`Erro ao gerar imagem: ${errorData.error?.message || 'Erro desconhecido'}`);
+    throw new Error(`Image generation error: ${errorData.error?.message || 'Unknown error'}`);
   }
 
   const data = await response.json();
