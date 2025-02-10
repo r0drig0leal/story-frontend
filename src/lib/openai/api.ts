@@ -14,6 +14,17 @@ export const callOpenAIChat = async (messages: any[], apiKey: string) => {
     }),
   });
 
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error('OpenAI API Error:', errorData);
+    
+    if (response.status === 429) {
+      throw new Error('Limite de quota da API OpenAI atingido. Por favor, verifique seu plano e detalhes de faturamento.');
+    }
+    
+    throw new Error(`Erro na API OpenAI: ${errorData.error?.message || 'Erro desconhecido'}`);
+  }
+
   const data = await response.json();
   return data.choices[0].message.content;
 };
@@ -38,7 +49,12 @@ export const generateDallEImage = async (prompt: string, apiKey: string): Promis
   if (!response.ok) {
     const errorData = await response.json();
     console.error('Image generation error:', errorData);
-    throw new Error(`Failed to generate image: ${errorData.error?.message || 'Unknown error'}`);
+    
+    if (response.status === 429) {
+      throw new Error('Limite de quota da API OpenAI atingido. Por favor, verifique seu plano e detalhes de faturamento.');
+    }
+    
+    throw new Error(`Erro ao gerar imagem: ${errorData.error?.message || 'Erro desconhecido'}`);
   }
 
   const data = await response.json();

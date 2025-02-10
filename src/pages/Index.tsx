@@ -40,7 +40,7 @@ const Index = () => {
     return setInterval(() => {
       setProgress((prev) => {
         if (prev >= 95) {
-          return 95; // Mantém em 95% até finalizar
+          return 95;
         }
         return prev + 1;
       });
@@ -64,11 +64,16 @@ const Index = () => {
     try {
       const result = await generateCompleteStory(character, apiKey);
       setStory(result);
-      setProgress(100); // Finaliza a barra de progresso
+      setProgress(100);
+      toast({
+        title: "Sucesso",
+        description: "História gerada com sucesso!",
+      });
     } catch (error) {
+      console.error('Error generating story:', error);
       toast({
         title: "Erro",
-        description: "Houve um erro ao gerar a história. Por favor, tente novamente.",
+        description: error.message || "Houve um erro ao gerar a história. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -131,4 +136,3 @@ const Index = () => {
 };
 
 export default Index;
-
