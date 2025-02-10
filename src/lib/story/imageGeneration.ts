@@ -1,22 +1,26 @@
+
 import { Character } from "../../types/story";
 import { generateDallEImage } from "../openai/api";
 
 export const generateImagePrompts = async (outline: string, character: Character, apiKey: string): Promise<string> => {
-  const characterDescription = `A ${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'} named ${character.name} with ${character.hairColor} hair, ${character.eyeColor} eyes, ${character.skinColor} skin, and ${character.bodyType} body type`;
+  // Simplificando a descrição do personagem para ser mais concisa
+  const characterDescription = `${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'} with ${character.hairColor} hair`;
   
   const messages = [
     {
       role: "system",
-      content: "You are a creative image prompt generator for children's books. Generate short, concise, child-friendly prompts.",
+      content: "You are a creative image prompt generator for children's books. Generate brief, concise, child-friendly prompts. Each prompt must be under 50 words.",
     },
     {
       role: "user",
-      content: `Create brief, child-friendly scene descriptions for a children's story. 
-      Main character: ${characterDescription}.
+      content: `Create very short scene descriptions for a children's story. 
+      Character: ${characterDescription}
       Story outline: ${outline}
-      Keep each prompt under 100 words and focus on one key scene element.
-      Format as "Chapter X: [brief scene description]"
-      Use simple, clear language.`,
+      Important:
+      - Each prompt must be under 50 words
+      - Focus on one main scene element
+      - Format as "Chapter X: [brief scene description]"
+      - Use simple language`,
     },
   ];
 
@@ -29,7 +33,7 @@ export const generateImagePrompts = async (outline: string, character: Character
     body: JSON.stringify({
       model: "gpt-4",
       messages,
-      max_tokens: 500,
+      max_tokens: 300,
       temperature: 0.7,
     }),
   });
@@ -43,12 +47,15 @@ export const generateImagePrompts = async (outline: string, character: Character
 };
 
 export const generateImage = async (prompt: string, character: Character, apiKey: string): Promise<string> => {
-  // Create a very concise character description
-  const characterDesc = `${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'} with ${character.hairColor} hair`;
+  // Criando uma descrição muito concisa do personagem
+  const characterDesc = `${character.age} year old ${character.gender === 'Masculino' ? 'boy' : 'girl'}`;
   
-  // Keep the prompt short and focused, limiting to 50 words for safer DALL-E compatibility
-  const promptText = prompt.split(':')[1]?.slice(0, 50) || prompt.slice(0, 50);
-  const safePrompt = `Pixar-style children's illustration. ${characterDesc}. ${promptText}. Digital art style, child-friendly.`;
+  // Limitando o prompt a 25 palavras para garantir que não ultrapasse o limite
+  const promptText = prompt.split(':')[1]?.trim().split(' ').slice(0, 25).join(' ') || 
+                    prompt.split(' ').slice(0, 25).join(' ');
+  
+  // Criando um prompt final curto e focado
+  const safePrompt = `Pixar-style children's art: ${characterDesc}. ${promptText}`;
   
   return generateDallEImage(safePrompt, apiKey);
 };
