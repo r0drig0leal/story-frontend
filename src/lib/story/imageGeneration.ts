@@ -1,6 +1,6 @@
 
 import { Character } from "../../types/story";
-import { generateDallEImage } from "../openai/api";
+import { generateDallEImage, callOpenAIChat } from "../openai/api";
 
 export const generateImagePrompts = async (outline: string, character: Character, apiKey: string): Promise<string> => {
   const characterDescription = `
