@@ -3,7 +3,6 @@ import { Character } from "../../types/story";
 import { generateDallEImage } from "../openai/api";
 
 export const generateImagePrompts = async (outline: string, character: Character, apiKey: string): Promise<string> => {
-  // Criar uma descrição detalhada e consistente do personagem no estilo Pixar
   const characterDescription = `
     ${character.age} anos de idade, ${character.gender.toLowerCase()}, 
     estilo animação Pixar 3D com traços suaves e expressivos,
@@ -36,36 +35,13 @@ export const generateImagePrompts = async (outline: string, character: Character
     },
   ];
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-4",
-      messages,
-      max_tokens: 200,
-      temperature: 0.7,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Falha ao gerar prompts de imagem: ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  return data.choices[0].message.content;
+  return callOpenAIChat(messages, apiKey);
 };
 
 export const generateImage = async (prompt: string, character: Character, apiKey: string): Promise<string> => {
-  // Extrair apenas a descrição da cena após os dois pontos
   const sceneText = prompt.split(':')[1]?.trim() || prompt;
-  
-  // Limitar a 15 palavras
   const limitedText = sceneText.split(' ').slice(0, 15).join(' ');
   
-  // Criar um prompt detalhado no estilo Pixar com as características consistentes
   const characterStyle = `
     ${character.gender.toLowerCase()} de ${character.age} anos estilo Pixar 3D,
     cabelo ${character.hairColor.toLowerCase()} brilhante e definido,
@@ -80,4 +56,3 @@ export const generateImage = async (prompt: string, character: Character, apiKey
   
   return generateDallEImage(safePrompt, apiKey);
 };
-
