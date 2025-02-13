@@ -9,7 +9,7 @@ export const callOpenAIChat = async (messages: any[], apiKey: string) => {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       messages,
     }),
   });
